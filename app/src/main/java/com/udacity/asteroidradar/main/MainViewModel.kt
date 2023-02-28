@@ -2,12 +2,15 @@ package com.udacity.asteroidradar.main
 
 import android.app.Application
 import androidx.lifecycle.*
+import com.udacity.asteroidradar.Constants
+import com.udacity.asteroidradar.Utils
 import com.udacity.asteroidradar.database.getDatabase
 import com.udacity.asteroidradar.domain.Asteroid
 import com.udacity.asteroidradar.network.AsteroidApiFilter
 import com.udacity.asteroidradar.repository.AsteroidsRepository
 import com.udacity.asteroidradar.repository.PicturesOfDayRepository
 import kotlinx.coroutines.launch
+import java.util.*
 
 /**
  * MainViewModel designed to store and manage UI-related data in a lifecycle conscious way. This
@@ -27,12 +30,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * init{} is called immediately when this ViewModel is created.
      */
+
     init {
         viewModelScope.launch {
             picturesOfDayRepository.refreshPictureOfDay()
-            asteroidsRepository.refreshAsteroids()
+            val calendar = Calendar.getInstance()
+            val startDate = Utils.convertDateStringToFormattedString(calendar.time, Constants.API_QUERY_DATE_FORMAT)
+            calendar.add(Calendar.DAY_OF_YEAR, 7)
+            val endDate = Utils.convertDateStringToFormattedString(calendar.time, Constants.API_QUERY_DATE_FORMAT)
+            asteroidsRepository.refreshAsteroids(startDate, endDate)
         }
     }
+
 
     val picOfDay = picturesOfDayRepository.pictureOfDay
     val asteroids = Transformations.switchMap(filter){
@@ -86,5 +95,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun updateFilter(filter: AsteroidApiFilter) {
         this.filter.value = filter
     }
+
+
+
+    fun updateDateRange(startDate: Date, endDate: Date) {
+        val start = Utils.convertDateStringToFormattedString(startDate, Constants.API_QUERY_DATE_FORMAT)
+        val end = Utils.convertDateStringToFormattedString(endDate, Constants.API_QUERY_DATE_FORMAT)
+        viewModelScope.launch {
+            asteroidsRepository.refreshAsteroids(start, end)
+        }
+    }
+
 
 }

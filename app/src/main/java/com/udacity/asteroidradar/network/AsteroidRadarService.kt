@@ -39,13 +39,15 @@ private val retrofit = Retrofit.Builder()
 /**
  * A retrofit service to fetch the picture of the day.
  */
+
 interface AsteroidRadarService {
     @GET(value = "planetary/apod")
     fun getPictureOfDay(@Query("api_key") apiKey: String): Deferred<NetworkPictureOfDay>
 
     @GET(value = "neo/rest/v1/feed")
-    fun getAsteroids(@Query("api_key") apiKey: String) : Deferred<String>
+    fun getAsteroids(@Query("start_date") startDate: String, @Query("end_date") endDate: String, @Query("api_key") apiKey: String): Deferred<String>
 }
+
 
 /**
  * Main entry point for network access. Call like `Network.picturesOfDay.getPictureOfDay()`

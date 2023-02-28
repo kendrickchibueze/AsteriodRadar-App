@@ -47,16 +47,17 @@ class AsteroidsRepository(private val database:NasaDatabase) {
      *
      * To actually load the asteroids for use, observe [asteroids]
      */
-    suspend fun refreshAsteroids() {
+
+    suspend fun refreshAsteroids(startDate: String, endDate: String) {
         withContext(Dispatchers.IO) {
-            // Try statement is used to catch Network Exceptions so the app does not
-            // crash when attempting to load without a network connection
             try {
-                val asteroids = Network.radarApi.getAsteroids(Constants.API_KEY).await()
+                val asteroids = Network.radarApi.getAsteroids(startDate, endDate, Constants.API_KEY).await()
                 database.asteroidDao.insertAll(*parseAsteroidsJsonResult(JSONObject(asteroids)).asDatabaseModel())
             } catch (e: Exception) {
                 Timber.e(e)
             }
         }
     }
+
+
 }

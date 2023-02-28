@@ -19,6 +19,7 @@ import com.udacity.asteroidradar.databinding.AsteroidItemBinding
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
 import com.udacity.asteroidradar.network.AsteroidApiFilter
 import timber.log.Timber
+import java.util.*
 
 class MainFragment : Fragment() {
     /**
@@ -75,16 +76,39 @@ class MainFragment : Fragment() {
      * Updates the filter in the [MainViewModel] when the menu items are selected from the
      * overflow menu.
      */
+
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        viewModel.updateFilter(
-            when (item.itemId) {
-                R.id.show_week_menu -> AsteroidApiFilter.SHOW_WEEK
-                R.id.show_today_menu -> AsteroidApiFilter.SHOW_TODAY
-                else -> AsteroidApiFilter.SHOW_SAVED
+        // Check which menu item was selected
+        when (item.itemId) {
+            R.id.show_week_menu -> {
+                // Get today's date
+                val today = Calendar.getInstance()
+                // Get date one week from now
+                val nextWeek = Calendar.getInstance().apply {
+                    add(Calendar.DAY_OF_YEAR, 7)
+                }
+                // Update the date range in the view model to only show the next week's asteroids
+                viewModel.updateDateRange(today.time, nextWeek.time)
+                // Update the filter to show only the next week's asteroids
+                viewModel.updateFilter(AsteroidApiFilter.SHOW_WEEK)
             }
-        )
+            R.id.show_today_menu -> {
+                // Update the filter to show only today's asteroids
+                viewModel.updateFilter(AsteroidApiFilter.SHOW_TODAY)
+            }
+            else -> {
+                // Update the filter to show saved asteroids
+                viewModel.updateFilter(AsteroidApiFilter.SHOW_SAVED)
+            }
+        }
+        // Return true to indicate that the event has been handled
         return true
     }
+
+
+
+
 }
 
 /**

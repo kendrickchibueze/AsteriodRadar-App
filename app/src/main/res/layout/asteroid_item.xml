@@ -39,7 +39,7 @@
                     android:layout_height="wrap_content"
                     android:background="@color/app_background"
                     android:text="@{asteroid.codename}"
-                    android:textColor="@color/default_text_color" />
+                    android:textColor="@color/text_color" />
 
                 <TextView
                     android:id="@+id/absolute_magnitude"
@@ -48,7 +48,7 @@
                     android:layout_marginTop="4dp"
                     android:background="@color/app_background"
                     android:text="@{asteroid.closeApproachDate}"
-                    android:textColor="@color/default_text_color" />
+                    android:textColor="@color/text_color" />
             </LinearLayout>
 
             <ImageView
